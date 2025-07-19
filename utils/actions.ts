@@ -6,14 +6,9 @@ import { redirect } from 'next/navigation';
 import { imageSchema, validateWithZodSchema, productSchema } from './schemas';
 import { uploadImage} from './supabase'
 
-// helper functions 
-const renderError = (error: unknown): { message: string } => {
-  console.log(error);
-  return {
-    message: error instanceof Error ? error.message : 'An error occurred',
-  };
-};
 
+
+// helper functions 
 const getAuthUser = async () => {
   const user = await currentUser();
   if (!user) {
@@ -22,7 +17,18 @@ const getAuthUser = async () => {
   return user;
 };
 
+const getAdminUser = async () => {
+  const user = await getAuthUser();
+  if (user.id !== process.env.ADMIN_USER_ID) redirect('/');
+  return user;
+};
 
+const renderError = (error: unknown): { message: string } => {
+  console.log(error);
+  return {
+    message: error instanceof Error ? error.message : 'An error occurred',
+  };
+};
 
 export const fetchFeaturedProducts = async () => {
     const products = await db.product.findMany({
@@ -91,4 +97,37 @@ export const createProductAction = async (
     return renderError(error);
   }
   redirect('/admin/products');
+};
+
+
+export const fetchAdminProducts = async () => {
+  await getAdminUser();
+  const products = await db.product.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+  return products;
+};
+
+
+// delete product action 
+import { revalidatePath } from 'next/cache';
+
+export const deleteProductAction = async (prevState: { productId: string }) => {
+  const { productId } = prevState;
+  await getAdminUser();
+
+  try {
+    await db.product.delete({
+      where: {
+        id: productId,
+      },
+    });
+
+    revalidatePath('/admin/products');
+    return { message: 'product removed' };
+  } catch (error) {
+    return renderError(error);
+  }
 };
