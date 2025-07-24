@@ -4,7 +4,7 @@ import FormInput from '@/components/form/FormInput';
 import PriceInput from '@/components/form/PriceInput';
 import TextAreaInput from '@/components/form/TextAreaInput';
 import { SubmitButton } from '@/components/form/Buttons';
-import CheckboxInput from '@/components/form/CheckboxInput';
+import CheckBoxInput from '@/components/form/CheckBoxInput';
 import ImageInputContainer from '@/components/form/ImageInputContainer';
 
 
