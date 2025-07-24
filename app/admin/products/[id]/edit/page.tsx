@@ -45,7 +45,7 @@ async function EditProductPage({ params }: { params: { id: string } }) {
             defaultValue={description}
           />
           <div className='mt-6'>
-            <CheckboxInput
+            <CheckBoxInput
               name='featured'
               label='featured'
               defaultChecked={featured}
